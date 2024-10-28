@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 int bin_search(int *arr, int num, int left, int right) {
     int mid, result = -1;
@@ -21,9 +20,26 @@ int bin_search(int *arr, int num, int left, int right) {
 }
 
 int main() {
-    int arr[7] = {1, 2, 2, 3, 4, 5, 7};
-    int i = bin_search(arr, 2, 0, 6);
-    printf("%d", i);
+    freopen("input.txt", "r", stdin);
+    int n;
+    scanf("%d", &n);
+
+    int *arr = (int *) malloc(n * sizeof(int));
+
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    int q;
+    scanf("%d", &q);
+
+    int x, y, r = 0;
+    for (int i = 0; i < q; i++) {
+        scanf("%d", &x);
+        y = x + r;
+        r = bin_search(arr, y, 0, n-1);
+        printf("%d\n", r);
+    }
 
     return 0;
 }
