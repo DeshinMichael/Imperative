@@ -56,6 +56,78 @@ int bitsetAny(const bitword *arr, int left, int right) {
     return 0;
 }
 
+void bitsetSetSeg(bitword *arr, int left, int right, int newval) {
+
+    if (left / BITS_WORD == right / BITS_WORD) {
+        for (int i = left % BITS_WORD; i < right % BITS_WORD; i++) {
+            if (newval) arr[left / BITS_WORD] |= (1ULL << i);
+            else arr[left / BITS_WORD] &= ~(1ULL << i);
+        }
+        return;
+    }
+
+    for (int i = left % BITS_WORD; i < BITS_WORD; i++) {
+        if (newval) arr[left / BITS_WORD] |= (1ULL << i);
+        else arr[left / BITS_WORD] &= ~(1ULL << i);
+    }
+
+    for (int i = left / BITS_WORD + 1; i < right / BITS_WORD; i++) {
+        if (newval) arr[i] |= ~0ULL;
+        else arr[i] &= 0ULL;
+    }
+
+    for (int i = 0; i < right % BITS_WORD; i++) {
+        if (newval) arr[right / BITS_WORD] |= (1ULL << i);
+        else arr[right / BITS_WORD] &= ~(1ULL << i);
+    }
+}
+
+void initBitsSetTable(uint8_t *table) {
+    for (int i = 0; i < 256; i++) {
+        table[i] = (i & 1) + table[i >> 1];
+    }
+}
+
+int bitsetCount(const bitword *arr, int left, int right) {
+    static uint8_t BitsSetTableFF[256];
+    static int is_init = 0;
+
+    if (!is_init) {
+        initBitsSetTable(BitsSetTableFF);
+        is_init = 1;
+    }
+
+    int count = 0;
+
+    if (left / BITS_WORD == right / BITS_WORD) {
+        for (int i = left % BITS_WORD; i < right % BITS_WORD; i++) {
+            if ((arr[left / BITS_WORD] >> i) & 1) count++;
+        }
+        return count;
+    }
+
+    for (int i = left % BITS_WORD; i < BITS_WORD; i++) {
+        if ((arr[left / BITS_WORD] >> i) & 1) count++;
+    }
+
+    for (int i = left / BITS_WORD + 1; i < right / BITS_WORD; i++) {
+        count += BitsSetTableFF[arr[i] & 0xFF] +
+                BitsSetTableFF[(arr[i] >> 8) & 0xFF] +
+                BitsSetTableFF[(arr[i] >> 16) & 0xFF] +
+                BitsSetTableFF[(arr[i] >> 24) & 0xFF] +
+                BitsSetTableFF[(arr[i] >> 32) & 0xFF] +
+                BitsSetTableFF[(arr[i] >> 40) & 0xFF] +
+                BitsSetTableFF[(arr[i] >> 48) & 0xFF] +
+                BitsSetTableFF[(arr[i] >> 56) & 0xFF];
+    }
+
+    for (int i = 0; i < right % BITS_WORD; i++) {
+        if ((arr[right / BITS_WORD] >> i) & 1) count++;
+    }
+
+    return count;
+}
+
 int main() {
     freopen("input.txt", "r", stdin);
     int n, t;
@@ -81,12 +153,12 @@ int main() {
                 bitsetSet(words, idx, newval);
                 break;
             case 3:
+                scanf("%d %d %d", &left, &right, &newval);
+                bitsetSetSeg(words, left, right, newval);
+                break;
+            case 4:
                 scanf("%d %d", &left, &right);
-                if (bitsetAny(words, left, right) == 0) {
-                    printf("none\n");
-                } else {
-                    printf("some\n");
-                }
+                printf("%d\n", bitsetCount(words, left, right));
                 break;
         }
     }
