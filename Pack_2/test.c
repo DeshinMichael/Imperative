@@ -1,46 +1,56 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define L 1000000
 
-int pow(int n, int p) {
-    int j = 1;
-    for (int i = 0; i < p; i++) {
-        j *= n;
-    }
-    return j;
-}
-
-int toTen(char N[], int p, int k) {
-    int res = 0;
-    int j = 0;
-    for (int i = k-1; i >= 0; i--) { 
-        res += (N[i]-'0') * pow(p, j);
-        j++; 
+int power(int n, int p) {
+    int res = 1;
+    while (p) {
+        res *= n;
+        p--;
     }
     return res;
 }
 
-int fromTen(int M[], int q) {
-    
+int to_ten(char *n, int p, int len) {
+    int res = 0;
+    int num, j = 0;
+    for (int i = len-1; i >= 0; i--) {
+        num = (n[i] >= '0' && n[i] <= '9') ? (n[i]-'0') : ((n[i] >= 'a' && n[i] <= 'z') ? (n[i]-'a'+10) : (n[i]-'A'+36));
+        res += num * power(p, j);
+        j++;
+    }
+    return res;
+}
+
+char *from_ten(int n, int q, char *res) {
+    int ost, i = 0;
+    while (n) {
+        ost = n % q;
+        res[i] = (ost >= 0 && ost <= 9) ? (char)(ost+'0') : ((ost >= 10 && ost <= 35) ? (char)(ost+'a'-10) : (char)(ost+'A'-36));
+        n /= q;
+        i++;
+    }
+    res[i] = '\0';
+    return res;
 }
 
 int main() {
+    freopen("input.txt", "r", stdin);
+    int p, q;
+    char *n = (char *) malloc(L * sizeof(char));
+    char *res = (char *) malloc(L * sizeof(char));
 
-    int p, q, k = 0; //из которой, в которую, количество символов N
-    char N[L], M[L], s; //число до 10, число после 10, символ числа
-    scanf("%d %d ", &p, &q);
+    scanf("%d %d %s", &p, &q, n);
 
-    //ввод данных
-    for (int i = 0; i < L; i++) {
-        scanf("%c", &s);
-        if (s == '\n') {
-            break;
-        }
-        N[i] = s;
-        k++;
+    res = strcpy(res, from_ten(to_ten(n, p, strlen(n)), q, res));
+    for (int i = strlen(res)-1; i >= 0; i--) {
+        printf("%c", res[i]);
     }
 
-    printf("%d", toTen(N, p, k));
-    
+    free(n);
+    free(res);
+
     return 0;
 }
