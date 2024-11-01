@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+// поиск наименьшей строки лексикографически больше исходной
 void find_smallest_big_str(char *str, int len) {
     int i = len-2;
     while (i >= 0 && str[i] >= str[i+1]) {

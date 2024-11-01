@@ -4,6 +4,7 @@
 
 #define L 1000000
 
+// возвдение в степень
 int power(int n, int p) {
     int res = 1;
     while (p) {
@@ -13,6 +14,7 @@ int power(int n, int p) {
     return res;
 }
 
+// перевод в десятичную
 int to_ten(char *n, int p, int len) {
     int res = 0;
     int num, j = 0;
@@ -24,6 +26,7 @@ int to_ten(char *n, int p, int len) {
     return res;
 }
 
+// перевод из десятичной
 char *from_ten(int n, int q, char *res) {
     int ost, i = 0;
     while (n) {
@@ -45,7 +48,7 @@ int main() {
     scanf("%d %d %s", &p, &q, n);
 
     res = strcpy(res, from_ten(to_ten(n, p, strlen(n)), q, res));
-    for (int i = strlen(res)-1; i >= 0; i--) {
+    for (int i = strlen(res)-1; i >= 0; i--) { // вывод в обратном порядке
         printf("%c", res[i]);
     }
 
