@@ -9,12 +9,14 @@ uint32_t swap_endian(uint32_t num) {
 }
 
 int main() {
-    FILE* input = fopen("1.in", "rb");
+    FILE* input = fopen("input.txt", "rb");
 
     uint32_t n;
     fread(&n, sizeof(uint32_t), 1, input);
 
-    int is_l_endian = (n & 0xFF000000) == 0;
+    uint32_t test_n = swap_endian(n);
+    int is_l_endian = (test_n > n);
+
     if (!is_l_endian) {
         n = swap_endian(n);
     }
@@ -24,17 +26,17 @@ int main() {
     fclose(input);
 
     int32_t sum = 0;
-    for (size_t i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         if (!is_l_endian) {
             num[i] = swap_endian(num[i]);
         }
         sum += num[i];
     }
 
-    FILE* output = fopen("1.out", "wb");
+    FILE* output = fopen("output.txt", "wb");
 
     if (!is_l_endian) {
-        sum = swap_endian((uint32_t) sum);
+        sum = swap_endian(sum);
     }
 
     fwrite(&sum, sizeof(int32_t), 1, output);
