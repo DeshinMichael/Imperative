@@ -74,7 +74,7 @@ void parseBsonToGson(FILE* file) {
 }
 
 int main() {
-    FILE* input = fopen("1.in", "rb");
+    FILE* input = fopen("input.txt", "rb");
 
     parseBsonToGson(input);
 
