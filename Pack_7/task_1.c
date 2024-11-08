@@ -9,12 +9,10 @@ typedef struct Note_t {
 void insert_sorted(Note *notes, int *len, Note new_note) {
     int i = *len - 1;
     while (i >= 0 && notes[i].key > new_note.key) {
-        notes[i+1].key = notes[i].key;
-        strcpy(notes[i+1].value, notes[i].value);
+        notes[i+1] = notes[i];
         i--;
     }
-    notes[i+1].key = new_note.key;
-    strcpy(notes[i+1].value, new_note.value);
+    notes[i+1] = new_note;
     (*len)++;
 }
 

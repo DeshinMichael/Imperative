@@ -1,64 +1,97 @@
+#include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
-#include <string.h>
+#include <inttypes.h>
 
-#pragma pack(push, 1)
-typedef struct MyFile_t
-{
-    char name[21];
-    uint64_t size;
-    uint8_t dir_or_not;
-    uint64_t time_created;
-    uint64_t time_changed;
-    uint8_t hide_or_not;
-} MyFile;
-#pragma pack(pop)
+typedef uint8_t byte;
+typedef uint8_t bool;
 
-int main()
-{
-    FILE *input = fopen("1.in", "rb");
+typedef struct bitword_s{
+    uint64_t value;
+    uint32_t size;
+}bitword;
+const bitword NULL_BITWORD = {0,0};
 
-    uint32_t N;
-    fread(&N, sizeof(uint32_t), 1, input);
+void ReadBitword(FILE *stream,bitword *out);
+bool WriteBitword(FILE *stream, bitword word);
 
-    uint64_t A;
-    uint64_t B;
 
-    fread(&A, sizeof(uint64_t), 1, input);
-    fread(&B, sizeof(uint64_t), 1, input);
+bool WriteBitword(FILE *stream, bitword word){
+    static byte prev_byte = 0;
+    static byte prev_byte_size = 0;
 
-    MyFile res[N];
-    MyFile arr[N];
-    fread(&arr, sizeof(MyFile), N, input);
+    if (word.size == NULL_BITWORD.size){
+        fwrite(&prev_byte,1,1,stream);
+        return 0;
+    }
 
-    int k = 0;
-    for (int i = 0; i < N; i++)
-    {
-        MyFile cur = arr[i];
+    while (word.size > 0){
 
-        if (cur.hide_or_not == 0 && cur.dir_or_not == 0 && cur.time_created >= A && cur.time_changed <= B)
-        {
-            res[k] = cur;
-            k++;
+        if (word.value % 2){
+            prev_byte |= 1 << (prev_byte_size);
+        } 
+
+        word.value >>= 1;
+        prev_byte_size++;
+        word.size--;
+
+        if (prev_byte_size == 8){
+            fwrite(&prev_byte,1,1,stream);
+            prev_byte = 0;
+            prev_byte_size = 0;
         }
     }
 
-    fclose(input);
+    return prev_byte_size == 0 ? 0 : 1;
+}
 
-    for (int i = 0; i < k - 1; i++)
-    {
-        for (int j = i + 1; j < k; j++)
-        {
-            if (strcmp(res[i].name, res[j].name) > 0)
-            {
-                MyFile buf = res[i];
-                res[i] = res[j];
-                res[j] = buf;
-            }
-        }
+void ReadBitword(FILE *stream,bitword *out){
+    out->value = 0;
+    fread(&out->size,sizeof(uint32_t),1,stream);
+
+    for (uint32_t i = 0;i < out->size;i++){
+        byte buff;
+        fread(&buff,1,1,stream);
+
+        if (buff){
+            out->value |= 1 << i;
+        }    
+    }
+}
+
+int main(){
+    FILE *in_file = fopen("1.in","rb");
+
+    uint32_t words_count;
+    fread(&words_count,sizeof(uint32_t),1,in_file);
+    bitword *alphabet = malloc(sizeof(bitword) * words_count);
+
+    for (uint32_t i = 0;i < words_count;i++){
+        ReadBitword(in_file,alphabet + i);
     }
 
-    FILE *output = fopen("output.bin", "wb");
-    fwrite(res, sizeof(MyFile), k, output);
-    fclose(output);
+    FILE *out_file = fopen("output.bin","wb");
+
+    uint32_t words_to_encode;
+    fread(&words_to_encode,sizeof(uint32_t),1,in_file);
+    
+    bool byte_not_writed = 0;
+
+    uint32_t writed = 0;
+
+    for (;words_to_encode > 0;words_to_encode--){
+        uint16_t buffer;
+        fread(&buffer,sizeof(uint16_t),1,in_file);
+
+        byte_not_writed = WriteBitword(out_file,alphabet[buffer]);
+        writed += alphabet[buffer].size;
+    }
+
+    if (writed % 8 != 0){
+        WriteBitword(out_file,NULL_BITWORD);
+    }
+    //printf("WRITED: %d\n",writed);
+    fclose(in_file);
+    fclose(out_file);
+    free(alphabet);
+    return 0;
 }

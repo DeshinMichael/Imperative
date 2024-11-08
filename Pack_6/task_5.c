@@ -2,20 +2,36 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define L 1000001
+#define MAX_KEY 1000001
 
 typedef struct Node_t {
     char value[8];
     int next;
 } Node;
 
-// добавление узла
-void insert(Node *list, int new_i, char *val) {
-    strcpy(list[new_i].value, val);
-    list[new_i].next = new_i+1;
+typedef struct List_t {
+    int size;
+    int capacity;
+} List;
+
+void insert(Node **lists, List *desc_list, int key, char *value) {
+
+    if (desc_list[key].capacity == 0) {
+        desc_list[key].capacity = 2;
+        lists[key] = (Node *) malloc(desc_list[key].capacity * sizeof(Node));
+    }
+
+    if (desc_list[key].size == desc_list[key].capacity) {
+        desc_list[key].capacity *= 2;
+        lists[key] = (Node *) realloc(lists[key], desc_list[key].capacity * sizeof(Node));
+    }
+
+    strcpy(lists[key][desc_list[key].size].value, value);
+    lists[key][desc_list[key].size].next = desc_list[key].size + 1;
+    desc_list[key].size++;
+
 }
 
-// вывод списка
 void print_list(Node *list, int size, int key) {
     for (int i = 0; i < size; i = list[i].next) {
         printf("%d %s\n", key, list[i].value);
@@ -23,50 +39,41 @@ void print_list(Node *list, int size, int key) {
 }
 
 int main() {
-
     freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
 
     int n;
     scanf("%d", &n);
 
-    Node **lists = (Node **) malloc(L * sizeof(Node *)); // массив списков
-    int *curr_size = (int *) calloc(L, sizeof(int)); // массив текущих размеров
-    int *capacity = (int *) calloc(L, sizeof(int)); // массив вместимостей
+    Node **lists = (Node **) malloc(MAX_KEY * sizeof(Node *));
+    List *desc_list = (List *) malloc(MAX_KEY * sizeof(List));
 
-    int key;
-    char val[8];
-    int max_key = -1; // максимальный ключ
-
-    for (int i = 0; i < n; i++) {
-        scanf("%d %s", &key, val);
-
-        if (key > max_key) max_key = key; // проверка на максимальный ключ
-
-        if (capacity[key] == 0) { // если пока ещё не было узлов
-            capacity[key] = 2;
-            lists[key] = (Node *) malloc(capacity[key] * sizeof(Node));
-        }
-
-        if (curr_size[key] == capacity[key]) { // если закончилось место
-            capacity[key] *= 2; // увеличение вместимости на 2
-            lists[key] = (Node *) realloc(lists[key], capacity[key] * sizeof(Node));
-        }
-
-        insert(lists[key], curr_size[key], val); // добавление узла
-        curr_size[key]++; // увеличение размера
+    for (int i = 0; i < MAX_KEY; i++) {
+        lists[i] = NULL;
+        desc_list[i].size = 0;
+        desc_list[i].capacity = 0;
     }
 
-    // вывод списков
+    int key;
+    char value[8];
+    int max_key = -1;
+    
+    for (int i = 0; i < n; i++) {
+        scanf("%d %s", &key, value);
+
+        if (key > max_key) max_key = key;
+
+        insert(lists, desc_list, key, value);
+    }
+
     for (int i = 0; i <= max_key; i++) {
-        print_list(lists[i], curr_size[i], i);
+        if (lists[i] != NULL) {
+            print_list(lists[i], desc_list[i].size, i);
+        }
         free(lists[i]);
     }
 
-    // освобождение памяти
     free(lists);
-    free(curr_size);
-    free(capacity);
+    free(desc_list);
 
     return 0;
 }

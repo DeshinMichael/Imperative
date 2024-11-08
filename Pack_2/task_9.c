@@ -4,7 +4,7 @@
 
 #define L 1000000
 
-// возвдение в степень
+// возведение в степень
 int power(int n, int p) {
     int res = 1;
     while (p) {
