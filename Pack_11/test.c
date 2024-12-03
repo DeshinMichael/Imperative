@@ -14,8 +14,17 @@ typedef struct HashTable_t {
     int size;
 } HashTable;
 
-uint32_t hash(uint32_t k) {
-    return (7*k - 10) % P;
+uint32_t jenkins_hash(const uint8_t* key, size_t len) {
+    uint32_t hash = 0;
+    for (size_t i = 0; i < len; i++) {
+        hash += key[i];
+        hash += hash << 10;
+        hash ^= hash >> 6;
+    }
+    hash += hash << 3;
+    hash ^= hash >> 11;
+    hash += hash << 15;
+    return hash;
 }
 
 HashTable *createHashTable(int size) {
@@ -33,7 +42,7 @@ HashNode *createNode(const int key) {
 }
 
 int valueExists(HashTable *table, int key) {
-    uint32_t index = hash(key) % table->size;
+    uint32_t index = jenkins_hash((uint8_t *)&key, sizeof(key)) % table->size;
     HashNode *current = table->buckets[index];
     while (current) {
         if (current->key == key) {
@@ -46,7 +55,7 @@ int valueExists(HashTable *table, int key) {
 
 void insert(HashTable *table, const int key) {
     if (valueExists(table, key)) return;
-    uint32_t index = hash(key) % table->size;
+    uint32_t index = jenkins_hash((uint8_t *)&key, sizeof(key)) % table->size;
     HashNode *node = createNode(key);
     node->next = table->buckets[index];
     table->buckets[index] = node;
@@ -66,12 +75,10 @@ void freeHashTable(HashTable *table) {
 }
 
 int main() {
-
-    FILE* input = fopen("input.txt", "rb");
-    FILE* output = fopen("output.txt", "wb");
+    freopen("input.txt", "r", stdin);
 
     int n;
-    fread(&n, sizeof(int), )
+    scanf("%d", &n);
 
     HashTable *table = createHashTable(n);
     int *res = (int *) malloc(n * sizeof(int));
@@ -90,9 +97,6 @@ int main() {
     for (int i = 0; i < res_size; i++) {
         printf("%d ", res[i]);
     }
-
-    fclose(input);
-    fclose(output);
 
     free(res);
     freeHashTable(table);
