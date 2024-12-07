@@ -10,16 +10,10 @@ int cmp_long(const void *x, const void *y) {
     return a == b ? 0 : (a < b ? -1 : 1);
 }
 
-int cmp_string_sort(const void *a, const void *b) {
+int cmp_string(const void *a, const void *b) {
     const char *str1 = *(const char **)a;
     const char *str2 = *(const char **)b;
     return strcmp(str1, str2);
-}
-
-int cmp_string_search(const void *key, const void *elem) {
-    const char *str_key = (const char *)key;
-    const char *str_elem = *(const char **)elem;
-    return strcmp(str_key, str_elem);
 }
 
 void *lower_bound(const void *key, const void *base, int *n, size_t size, callback cmp, int *res) {
@@ -66,14 +60,7 @@ int main() {
     }
 
     qsort(arr1, n1, sizeof(arr1[0]), cmp_long);
-    qsort(arr2, n2, sizeof(arr2[0]), cmp_string_sort);
-
-    // for (int i = 0; i < n1; i++) {
-    //     printf("%lld\n", arr1[i]);
-    // }
-    // for (int i = 0; i < n2; i++) {
-    //     printf("%s\n", arr2[i]);
-    // }
+    qsort(arr2, n2, sizeof(arr2[0]), cmp_string);
 
     int q1;
     scanf("%d", &q1);
@@ -91,7 +78,8 @@ int main() {
     for (int i = 0; i < q2; i++) {
         scanf("%s", str);
         int res;
-        lower_bound(str, arr2, &n2, sizeof(arr2[0]), cmp_string_search, &res);
+        char *string = (char *)&str;
+        lower_bound(&string, arr2, &n2, sizeof(arr2[0]), cmp_string, &res);
         printf("%d\n", res);
     }
 
