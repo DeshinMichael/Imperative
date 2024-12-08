@@ -15,7 +15,7 @@ int main() {
     }
 
     int *deque = (int *) malloc(n * sizeof(int));
-    int front = 0, back = 0; 
+    int front = 0, back = 0;
 
     int left = 0, right = 0;
     char q;
