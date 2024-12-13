@@ -18,7 +18,7 @@ tree_node *init_tree(int key) {
     return root;
 }
 
-void insert(tree_node **root, int key, int *flag) {
+void insert(tree_node **root, int key) {
     if (*root == NULL) {
         *root = (tree_node *) malloc(sizeof(tree_node));
         (*root)->key = key;
@@ -26,9 +26,9 @@ void insert(tree_node **root, int key, int *flag) {
         (*root)->l = NULL;
         (*root)->r = NULL;
     } else if (key < (*root)->key) {
-        insert(&(*root)->l, key, flag);
+        insert(&(*root)->l, key);
     } else if (key > (*root)->key) {
-        insert(&(*root)->r, key, flag);
+        insert(&(*root)->r, key);
     } else {
         (*root)->count++;
     }
@@ -81,9 +81,8 @@ int main() {
     shuffle(arr, n);
 
     tree_node *root = init_tree(arr[0]);
-    int flag = 1;
     for (int i = 1; i < n; i++) {
-        insert(&root, arr[i], &flag);
+        insert(&root, arr[i]);
     }
 
     int k = 0;
