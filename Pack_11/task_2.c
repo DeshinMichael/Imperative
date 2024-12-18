@@ -7,10 +7,13 @@ typedef struct Node_t {
 } Node;
 
 typedef void (*callback) (void *ctx, int *value);
-typedef void (*callback_free) (void *node);
 
 void sum_even(void *ctx, int *value) {
     if (*value % 2 == 0) (*(int *)ctx) += *value;
+}
+
+void free_node(void *ctx, int *value) {
+    free(value);
 }
 
 void arrayForeach(void *ctx, callback func, int *arr, int n) {
@@ -20,17 +23,10 @@ void arrayForeach(void *ctx, callback func, int *arr, int n) {
 }
 
 void listForeach(void *ctx, callback func, Node *head) {
-    for (Node *i = head; i != NULL; i = i->next) {
-        func(ctx, &i->value);
-    }
-}
-
-void free_list(callback_free func, Node *head) {
-    Node *curr_node = head;
-    while (curr_node->next != NULL) {
-        Node *temp = curr_node;
-        curr_node = curr_node->next;
-        func(temp);
+    while (head != NULL) {
+        Node *temp = head;
+        head = head->next;
+        func(ctx, (int *)temp);
     }
 }
 
@@ -79,7 +75,7 @@ int main() {
     printf("%d %d", sum_in_arr, sum_in_list);
 
     free(arr);
-    free_list(free, head);
+    listForeach((void *)&sum_in_list, free_node, head);
 
     return 0;
 }
