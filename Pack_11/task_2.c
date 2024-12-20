@@ -6,23 +6,24 @@ typedef struct Node_t {
     struct Node_t* next;
 } Node;
 
-typedef void (*callback) (void *ctx, int *value);
+typedef void (*callback)(void *ctx, int *value);
 
 void sum_even(void *ctx, int *value) {
     if (*value % 2 == 0) (*(int *)ctx) += *value;
 }
 
 void free_node(void *ctx, int *value) {
-    free(value);
+    Node *temp = (Node *)value;
+    free(temp);
 }
 
-void arrayForeach(void *ctx, callback func, int *arr, int n) {
+void arrayForeach(void *ctx, void func(void *ctx, int *value), int *arr, int n) {
     for (int i = 0; i < n; i++) {
         func(ctx, &arr[i]);
     }
 }
 
-void listForeach(void *ctx, callback func, Node *head) {
+void listForeach(void *ctx, void func(void *ctx, int *value), Node *head) {
     while (head != NULL) {
         Node *temp = head;
         head = head->next;
