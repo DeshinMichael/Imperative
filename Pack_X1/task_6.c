@@ -6,7 +6,6 @@
 typedef long long ll;
 
 ll fact[MAX_N+1];
-ll invfact[MAX_N+1];
 
 ll power(ll num, int p) {
     ll res = 1;
@@ -24,10 +23,6 @@ void init_fact_tables() {
     fact[0] = 1;
     for (int i = 1; i <= MAX_N; i++) {
         fact[i] = (fact[i-1] * i) % M;
-    }
-    invfact[MAX_N] = power(fact[MAX_N], M - 2);
-    for (int i = MAX_N; i > 0; i--) {
-        invfact[i-1] = (invfact[i] * i) % M;
     }
 }
 
@@ -48,8 +43,7 @@ int main() {
         }
 
         ll res = fact[n];
-        res = (res * invfact[k]) % M;
-        res = (res * invfact[n - k]) % M;
+        res = (res * power((fact[k] * fact[n-k]) % M, M-2)) % M;
 
         printf("%lld\n", res);
     }
