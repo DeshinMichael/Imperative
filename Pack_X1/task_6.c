@@ -1,11 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #define M 1000000007
 #define MAX_N 1000001
 
 typedef long long ll;
-
-ll fact[MAX_N+1];
 
 ll power(ll num, int p) {
     ll res = 1;
@@ -19,7 +18,7 @@ ll power(ll num, int p) {
     return res;
 }
 
-void init_fact_tables() {
+void init_fact_tables(ll *fact) {
     fact[0] = 1;
     for (int i = 1; i <= MAX_N; i++) {
         fact[i] = (fact[i-1] * i) % M;
@@ -32,7 +31,9 @@ int main() {
     int t, n, k;
     scanf("%d", &t);
 
-    init_fact_tables();
+    ll *fact = (ll *) malloc((MAX_N+1) * sizeof(ll));
+
+    init_fact_tables(fact);
 
     while (t--) {
         scanf("%d %d", &n, &k);
@@ -47,6 +48,8 @@ int main() {
 
         printf("%lld\n", res);
     }
+
+    free(fact);
 
     return 0;
 }
