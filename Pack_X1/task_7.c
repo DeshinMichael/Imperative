@@ -28,7 +28,7 @@ void straight_motion(double **matrix, int n) {
         }
 
         for (int i = k+1; i < n; i++) {
-            t = matrix[i][k] / matrix[k][k];
+            t = matrix[i][k] / matrix[k][q];
             for (int j = k; j < n+1; j++) {
                 matrix[i][j] -= matrix[k][j] * t;
             }
