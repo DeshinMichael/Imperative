@@ -58,7 +58,7 @@ int straight_motion(ll **matrix, int k, int n, ll p, int *free_vars) {
     }
 
     for (int i = rank; i < k; i++) {
-        if (matrix[i][n] % p != 0) {
+        if (matrix[i][n] != 0) {
             return -1;
         }
     }
@@ -75,7 +75,7 @@ void reverse_motion(ll **matrix, ll *X, int rank, int n, ll p, int *free_vars) {
         pivot_col = -1;
 
         for (int j = 0; j < n; j++) {
-            if (matrix[i][j] % p != 0) {
+            if (matrix[i][j] != 0) {
                 pivot_col = j;
                 break;
             }
