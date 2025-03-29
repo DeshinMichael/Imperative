@@ -1,0 +1,1 @@
+gcc core.c -shared -fPIC -O2 -o core.so
