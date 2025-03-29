@@ -1,0 +1,1 @@
+gcc sol.c test.c main.c -o solution
