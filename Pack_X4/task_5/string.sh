@@ -1,0 +1,1 @@
+gcc string.c -shared -fPIC -O2 -o string.so
