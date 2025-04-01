@@ -10,23 +10,27 @@ typedef struct State {
 State state;
 
 int main() {
-    char str[1001];
+    char str[500];
 
     while (fgets(str, sizeof(str), stdin)) {
-        str[strcspn(str, "\r\n")] = '\0';
+        if (strlen(str) >= 2 && str[strlen(str)-2] == '\r') {
+            str[strlen(str)-2] = '\0';
+        } else if (str[strlen(str)-1] == '\n') {
+            str[strlen(str)-1] = '\0';
+        }
 
-        char *words[5];
+        char *words[4];
         int argc = 0;
         char *tok = strtok(str, " ");
-        while (tok && argc < 5) {
+        while (tok != NULL && argc < 4) {
             words[argc++] = tok;
             tok = strtok(NULL, " ");
         }
 
         char *plugin = "core";
         char *f_name = words[0];
-
         char *colon = strchr(words[0], ':');
+
         if (colon) {
             *colon = '\0';
             plugin = words[0];
