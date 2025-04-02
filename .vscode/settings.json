@@ -10,6 +10,7 @@
         "stdio.h": "c",
         "assert.h": "c",
         "myblas.h": "c",
-        "integerset.h": "c"
+        "integerset.h": "c",
+        "hashmap.h": "c"
     }
 }
