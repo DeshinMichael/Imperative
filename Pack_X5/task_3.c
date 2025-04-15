@@ -5,7 +5,8 @@ typedef struct Point_t {
     int x, y;
 } Point;
 
-int BFS(Point s, Point f, int N, int M, char **lab, int **dist, int **visited, Point *queue, int dx[], int dy[]) {
+int BFS(Point s, Point f, int N, int M, char **lab, int **dist, int **visited, Point *queue, 
+    int dx[], int dy[]) {
     int first = 0, last = 0;
 
     queue[last++] = s;
@@ -74,6 +75,16 @@ int main() {
 
     int res = BFS(s, f, N, M, lab, dist, visited, queue, dx, dy);
     printf("%d", res);
+
+    for (int i = 0; i < M; i++) {
+        free(lab[i]);
+        free(dist[i]);
+        free(visited[i]);
+    }
+    free(lab);
+    free(dist);
+    free(visited);
+    free(queue);
 
     return 0;
 }
