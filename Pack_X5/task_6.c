@@ -47,7 +47,7 @@ void dijkstra(int s, int N, Node **adj, int *dist, int *parent, int *mark) {
             int v = cur->to;
             int w = cur->weight;
 
-            if (dist[u] + w < dist[v]) {
+            if (dist[v] > dist[u] + w) {
                 dist[v] = dist[u] + w;
                 parent[v] = u;
                 if (mark[v] == 0) {
