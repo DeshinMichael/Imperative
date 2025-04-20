@@ -79,6 +79,8 @@ void print_path(int t, int N, int *dist, int *parent) {
         printf(" %d", path[i]);
     }
     printf("\n");
+
+    free(path);
 }
 
 void free_graph(int n, Node **adj) {
